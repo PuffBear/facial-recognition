@@ -1,0 +1,115 @@
+\documentclass[a4paper]{article}
+\setlength{\topmargin}{-1.0in}
+\setlength{\oddsidemargin}{-0.2in}
+\setlength{\evensidemargin}{0in}
+\setlength{\textheight}{10.5in}
+\setlength{\textwidth}{6.5in}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amssymb}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{mathpartir}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Assignment 1},
+    pdfpagemode=FullScreen,
+    }
+\def\endproofmark{$\Box$}
+\newenvironment{proof}{\par{\bf Proof}:}{\endproofmark\smallskip}
+\begin{document}
+\begin{center}
+{\large \bf \color{red}  Department of Computer Science} \\
+{\large \bf \color{red}  Ashoka University} \\
+
+\vspace{0.1in}
+
+{\large \bf \color{blue}  Artificial Intelligence: CS-4440-1}
+
+\vspace{0.05in}
+
+    { \bf \color{YellowOrange} Assignment{ $<$1$>$}}
+\end{center}
+\medskip
+
+{\textbf{Work:} Execution Plan} \hfill {\textbf{Name: Agriya Yadav} }
+
+\bigskip
+\hrule
+
+
+% Begin your report here %
+\subsection*{Phase 1: Fast Development on a Subset}
+\textbf{Goal:} Implement end-to-end pipeline quickly (classical + deep) and validate all evaluation hooks.
+\begin{enumerate}
+  \item \textbf{Subset creation (balanced):} keep identities with $\geq 8$ images so per-ID splits like $5/2/1$ are possible; cap very-large IDs (e.g., $\leq 20$ imgs/ID) to avoid dominance.
+  \item \textbf{Implement modules:}
+  \begin{itemize}
+    \item \emph{Data:} list IDs, per-ID splits (train/val/test), grayscale loader.
+    \item \emph{Classical:} Eigenfaces (PCA$\to$LinearSVC), LBP-hist (LBP$\to$LinearSVC).
+    \item \emph{Deep:} MTCNN alignment + FaceNet embeddings; heads: cosine-centroid and SVM.
+    \item \emph{Robustness:} lighting (contrast/brightness), noise/blur/JPEG, occlusions (eyes/mouth/center).
+    \item \emph{Explainability:} eigenfaces grid; LBP response heatmap; gradient saliency for deep.
+    \item \emph{Metrics:} Top-1, macro-F1, precision, recall, confusion matrices; JSON logging.
+  \end{itemize}
+  \item \textbf{Quick run (sanity):}
+\begin{verbatim}
+python -m src.run --data-root data/celebs_subset \
+  --min-images-per-id 8 --train-per-id 5 --val-per-id 2 --test-per-id 1 \
+  --image-size 160 --pca-components 150 --lbp-radius 2 --lbp-pmult 8 \
+  --use-deep true --deep-head cosine --deep-threshold 0.55 --outdir plots
+\end{verbatim}
+\end{enumerate}
+
+\subsection*{Phase 2: Scale Up for Final Baselines}
+\textbf{Goal:} Train/evaluate on the full Kaggle dataset (dropping IDs with too-few images) for stronger accuracy.
+\begin{enumerate}
+  \item \textbf{Per-ID splits:} use fixed counts (e.g., $6/2/2$) or $\sim70/15/15$ with floors; ensure $\geq 1$ val and $\geq 1$ test per ID; drop IDs that cannot satisfy the split.
+  \item \textbf{Cache to accelerate:} store aligned crops and (optionally) embedding \texttt{.npy} files to avoid recomputation.
+  \item \textbf{Train three baselines:} Eigenfaces, LBP, Deep+Cosine; then Deep+SVM head for best accuracy.
+  \item \textbf{Report full-test metrics:} Top-1, macro-F1, precision/recall, confusion matrices for each method.
+\end{enumerate}
+
+\subsection*{Phase 3: Robustness, Explainability, and Bias}
+\textbf{Goal:} Go beyond accuracy using standard stress tests and analyses. For compute efficiency, use a \emph{stratified sample} of the test set (e.g., 100--200 images) and report relative changes.
+\begin{enumerate}
+  \item \textbf{Robustness buckets (report $\Delta\%$ vs baseline):}
+  \begin{itemize}
+    \item \emph{Lighting:} brightness/contrast factors $\alpha \in \{0.6,0.8,1.2,1.4\}$.
+    \item \emph{Quality:} Gaussian noise $\sigma \in \{5,10,20\}$; blur $k \in \{3,5,9\}$; JPEG $q \in \{90,60,30\}$.
+    \item \emph{Occlusions:} eyes/mouth/center with occlusion fraction $\{0.2,0.3\}$.
+  \end{itemize}
+  Define the change as:
+  \[
+    \Delta\% \;=\; 100 \times \big(\mathrm{Acc}_{\text{perturbed}} - \mathrm{Acc}_{\text{baseline}}\big).
+  \]
+  \item \textbf{Explainability:} show eigenfaces (top PCA components), LBP heatmaps (tile-wise responses), and deep gradient saliency maps indicating influential facial regions.
+  \item \textbf{Bias analysis:} group performance by one or two attributes (e.g., perceived gender, glasses/no-glasses). If attributes are unavailable, annotate a small subset manually; report per-group accuracy and observed gaps with cautious interpretation.
+\end{enumerate}
+
+\subsection*{Phase 4: Crowd Recognition Test}
+\textbf{Goal:} Detect and recognize known identities in group photos (realistic setting).
+\begin{enumerate}
+  \item \textbf{Gallery:} build class centroids from all training images (aligned + embedded).
+  \item \textbf{Inference:} detect faces in group images (MTCNN), align, embed, classify via cosine to centroids with a rejection threshold (\texttt{unknown}).
+  \item \textbf{Report:} face detection rate and identification precision@1 among detected faces; illustrate typical failure modes (missed detections, look-alikes, threshold effects).
+\end{enumerate}
+
+\subsection*{Why a Subset for Development?}
+A smaller, balanced subset enables rapid iteration across models and five buckets; final baselines are then run on the full dataset. Robustness/bias are reported as $\Delta\%$ on a stratified sample, a standard practice that emphasizes \emph{relative} sensitivity rather than absolute accuracy.
+
+\subsection*{Concrete Checklist}
+\begin{enumerate}
+  \item Implement and sanity-check: data/splits, Eigenfaces, LBP, Deep (cosine \& SVM), metrics/plots.
+  \item Run full-dataset baselines; cache alignment/embeddings.
+  \item Run robustness sweeps on a stratified sample; log JSON metrics and plot $\Delta\%$ figures.
+  \item Produce explainability figures and a succinct bias table with subgroup gaps.
+  \item Execute the crowd test with annotated outputs and summarize error modes.
+\end{enumerate}
+
+
+\end{document}
