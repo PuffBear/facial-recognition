@@ -52,12 +52,12 @@
   {
     "path": "data/celebs_subset/Jamuna/Jamuna_0008.jpg",
     "true": "Jamuna",
-    "pred": "unknown"
+    "pred": "Mallikarjunrao"
   },
   {
     "path": "data/celebs_subset/JayaBhaduri/JayaBhaduri_0013.jpg",
     "true": "JayaBhaduri",
-    "pred": "unknown"
+    "pred": "richa_chadha"
   },
   {
     "path": "data/celebs_subset/Jayram/Jayram_0000.jpg",
@@ -187,12 +187,12 @@
   {
     "path": "data/celebs_subset/nana_patekar/nana_patekar_0014.jpg",
     "true": "nana_patekar",
-    "pred": "unknown"
+    "pred": "ashish_vidyarthi"
   },
   {
     "path": "data/celebs_subset/nawazuddin_siddiqui/nawazuddin_siddiqui_0012.jpg",
     "true": "nawazuddin_siddiqui",
-    "pred": "unknown"
+    "pred": "amrish_puri"
   },
   {
     "path": "data/celebs_subset/om_puri/om_puri_0005.jpg",
@@ -207,7 +207,7 @@
   {
     "path": "data/celebs_subset/raj_babbar/raj_babbar_0011.jpg",
     "true": "raj_babbar",
-    "pred": "unknown"
+    "pred": "RishiKapoor"
   },
   {
     "path": "data/celebs_subset/ramya_krishnan/ramya_krishnan_0011.jpg",
@@ -237,12 +237,12 @@
   {
     "path": "data/celebs_subset/shabana_azmi/shabana_azmi_0010.jpg",
     "true": "shabana_azmi",
-    "pred": "unknown"
+    "pred": "smita_patil"
   },
   {
     "path": "data/celebs_subset/smita_patil/smita_patil_0015.jpg",
     "true": "smita_patil",
-    "pred": "unknown"
+    "pred": "smita_patil"
   },
   {
     "path": "data/celebs_subset/waheeda_rehman/waheeda_rehman_0000.jpg",

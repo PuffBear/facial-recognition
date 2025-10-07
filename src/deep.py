@@ -37,6 +37,27 @@ def compute_centroids(embeddings: np.ndarray, labels: list[str]) -> dict[str, np
         cents[c] = np.mean(embeddings[idx], axis=0)
     return cents
 
+def best_threshold_cosine(val_paths_labels, embedder, centroids, lo=0.40, hi=0.75, step=0.02):
+        from src import metrics as MT
+        import numpy as np
+        from PIL import Image
+        thr, best_f1 = 0.55, -1
+        for t in np.arange(lo, hi+1e-6, step):
+            def pred_path(p):
+                e = embedder.embed(embedder.align(Image.open(p).convert("RGB")))
+                # inline cosine
+                best, lab = -1, "unknown"
+                for c, mu in centroids.items():
+                    s = float(np.dot(e, mu)/(np.linalg.norm(e)*np.linalg.norm(mu)+1e-8))
+                    if s > best: best, lab = s, c
+                return lab if best >= t else "unknown"
+            ytrue = [lab for _, lab in val_paths_labels]
+            ypred = [pred_path(p) for p,_ in val_paths_labels]
+            m,_ = MT.evaluate(lambda v:v, ypred, ytrue)
+            if m["macro_f1"] > best_f1:
+                best_f1, thr = m["macro_f1"], float(t)
+        return thr, best_f1
+
 def cosine_predict(vec: np.ndarray, cents: dict[str, np.ndarray], threshold: float = 0.55) -> tuple[str, float]:
     best_s, best_c = -1.0, None
     for c, mu in cents.items():
