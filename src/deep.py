@@ -5,6 +5,7 @@ from facenet_pytorch import MTCNN, InceptionResnetV1
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
+from sklearn.neighbors import KNeighborsClassifier
 
 class FaceEmbedder:
     def __init__(self, size: int = 160, use_pretrained: bool = True, device: str | None = None):
@@ -20,7 +21,7 @@ class FaceEmbedder:
             if t is None:
                 return pil_img.resize((self.size, self.size))
             arr = (t.permute(1, 2, 0).cpu().numpy() * 255.0).astype(np.uint8)
-            return Image.fromarray(arr)
+            return Image.fromarray(arr).resize((self.size, self.size))
         except Exception:
             # Robust fallback when MTCNN fails internally (e.g., no boxes)
             return pil_img.resize((self.size, self.size))
@@ -30,9 +31,13 @@ class FaceEmbedder:
         x = np.array(pil_img).astype(np.float32) / 255.0
         if x.ndim == 2:  # gray -> RGB
             x = np.repeat(x[..., None], 3, axis=2)
+        # Normalize to [-1, 1] as expected by facenet_pytorch InceptionResnetV1
+        x = (x - 0.5) / 0.5
         x = torch.from_numpy(x).permute(2, 0, 1).unsqueeze(0).to(self.device)
-        emb = self.net(x).detach().cpu().numpy()[0]
-        return emb.astype(np.float32)
+        emb = self.net(x).detach().cpu().numpy()[0].astype(np.float32)
+        # L2-normalize embeddings for cosine and linear heads
+        n = np.linalg.norm(emb) + 1e-8
+        return (emb / n).astype(np.float32)
 
 def compute_centroids(embeddings: np.ndarray, labels: list[str]) -> dict[str, np.ndarray]:
     cents = {}
@@ -72,3 +77,6 @@ def cosine_predict(vec: np.ndarray, cents: dict[str, np.ndarray], threshold: flo
 
 def make_svm_head() -> Pipeline:
     return Pipeline([("sc", StandardScaler()), ("svm", LinearSVC())])
+
+def make_knn_head(n_neighbors: int = 3) -> Pipeline:
+    return Pipeline([("sc", StandardScaler()), ("knn", KNeighborsClassifier(n_neighbors=n_neighbors))])

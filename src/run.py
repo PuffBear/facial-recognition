@@ -13,6 +13,7 @@ from src import classical as CL
 from src import metrics as MT
 from src import deep as DP  # MTCNN + FaceNet embeddings
 from src import aug as AG
+import hashlib, os.path as osp, json as _json
 
 
 def load_split_gray(pairs: List[Tuple[str, str]], size: int = 160, align_fn=None):
@@ -84,14 +85,32 @@ def main(a):
     if a.use_deep:
         E = DP.FaceEmbedder(size=a.image_size, use_pretrained=True)
 
+        # Simple embedding cache to speed repeated runs
+        cache_dir = osp.join(a.outdir, "emb_cache")
+        os.makedirs(cache_dir, exist_ok=True)
+
+        def _cache_key(pth: str) -> str:
+            h = hashlib.md5(pth.encode("utf-8")).hexdigest()
+            return osp.join(cache_dir, f"{h}.npy")
+
         def embed_path(pth: str):
-            """Align + embed with robust fallbacks for bad files."""
+            ck = _cache_key(pth)
+            if osp.exists(ck):
+                try:
+                    return np.load(ck)
+                except Exception:
+                    pass
             try:
                 pil = Image.open(pth).convert("RGB")
             except Exception:
                 pil = Image.new("RGB", (a.image_size, a.image_size), (0, 0, 0))
             pil_al = E.align(pil)
-            return E.embed(pil_al)
+            emb = E.embed(pil_al)
+            try:
+                np.save(ck, emb)
+            except Exception:
+                pass
+            return emb
 
         # Build train embeddings
         tr_emb, tr_lab = [], []
@@ -106,6 +125,16 @@ def main(a):
 
         if a.deep_head == "svm":
             head = DP.make_svm_head()
+            head.fit(tr_emb, tr_lab)
+
+            def pred_path(pth: str) -> str:
+                e = embed_path(pth)
+                return head.predict([e])[0]
+
+            cm_classes = classes
+
+        elif a.deep_head == "knn":
+            head = DP.make_knn_head()
             head.fit(tr_emb, tr_lab)
 
             def pred_path(pth: str) -> str:
@@ -264,7 +293,7 @@ if __name__ == "__main__":
 
     # Deep args
     ap.add_argument("--use-deep", action="store_true")
-    ap.add_argument("--deep-head", choices=["cosine", "svm"], default="cosine")
+    ap.add_argument("--deep-head", choices=["cosine", "svm", "knn"], default="cosine")
     ap.add_argument("--deep-threshold", type=float, default=0.55)
 
     args = ap.parse_args()
