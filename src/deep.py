@@ -15,11 +15,15 @@ class FaceEmbedder:
 
     @torch.no_grad()
     def align(self, pil_img: Image.Image) -> Image.Image:
-        t = self.mtcnn(pil_img, return_prob=False)
-        if t is None:
+        try:
+            t = self.mtcnn(pil_img, return_prob=False)
+            if t is None:
+                return pil_img.resize((self.size, self.size))
+            arr = (t.permute(1, 2, 0).cpu().numpy() * 255.0).astype(np.uint8)
+            return Image.fromarray(arr)
+        except Exception:
+            # Robust fallback when MTCNN fails internally (e.g., no boxes)
             return pil_img.resize((self.size, self.size))
-        arr = (t.permute(1, 2, 0).cpu().numpy() * 255.0).astype(np.uint8)
-        return Image.fromarray(arr)
 
     @torch.no_grad()
     def embed(self, pil_img: Image.Image) -> np.ndarray:

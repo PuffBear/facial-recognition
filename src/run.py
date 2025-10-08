@@ -24,7 +24,10 @@ def load_split_gray(pairs: List[Tuple[str, str]], size: int = 160, align_fn=None
         except Exception:
             pil = Image.new("RGB", (size, size), (0, 0, 0))
         if align_fn is not None:
-            pil = align_fn(pil)
+            try:
+                pil = align_fn(pil)
+            except Exception:
+                pil = pil.resize((size, size))
         pil = pil.resize((size, size)).convert("L")
         X.append(np.array(pil, dtype=np.uint8))
         y.append(lab)
@@ -152,7 +155,7 @@ def main(a):
             )
         print("[Deep]", deep_metrics)
 
-    # ===== Bucketed Stress Tests (optional) =====
+    # ===== Bucketed Stress Tests =====
     if a.eval_buckets:
         os.makedirs(a.outdir, exist_ok=True)
 
