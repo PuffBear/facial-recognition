@@ -13,6 +13,7 @@ from src import classical as CL
 from src import metrics as MT
 from src import deep as DP  # MTCNN + FaceNet embeddings
 from src import aug as AG
+from src import explain as EX
 import hashlib, os.path as osp, json as _json
 
 
@@ -39,10 +40,16 @@ def main(a):
     os.makedirs(a.outdir, exist_ok=True)
 
     # -------- data & splits --------
-    id2 = DU.list_id_folders(a.data_root, min_images_per_id=a.min_images_per_id)
-    splits = DU.split_idwise(
-        id2, train=a.train_per_id, val=a.val_per_id, test=a.test_per_id
-    )
+    if a.load_splits and os.path.exists(a.load_splits):
+        splits = DU.load_splits(a.load_splits)
+    else:
+        id2 = DU.list_id_folders(a.data_root, min_images_per_id=a.min_images_per_id)
+        splits = DU.split_idwise(
+            id2, train=a.train_per_id, val=a.val_per_id, test=a.test_per_id
+        )
+        if a.save_splits:
+            os.makedirs(os.path.dirname(a.save_splits), exist_ok=True)
+            DU.save_splits(splits, a.save_splits)
     classes = sorted({lab for _, lab in splits["train"]})
     if not classes:
         raise SystemExit("No identities met the min_images_per_id requirement.")
@@ -80,6 +87,20 @@ def main(a):
     MT.save_json(lbp_metrics, os.path.join(a.outdir, "metrics_lbp.json"))
     MT.plot_confusion(yte, lbp_yhat, classes, os.path.join(a.outdir, "cm_lbp.png"))
     print("[LBP]", lbp_metrics)
+
+    # ===== Explainability (classical) minimal outputs =====
+    try:
+        # Save top Eigenfaces components
+        pca = eig_clf.named_steps.get("pca")
+        if pca is not None and hasattr(pca, "components_"):
+            EX.save_eigenfaces_components(pca, os.path.join(a.outdir, "eigenfaces_components.png"), (a.image_size, a.image_size), n_components=16)
+        # Save a sample LBP response heatmap from first test image
+        if Xte:
+            from skimage.feature import local_binary_pattern
+            lbp_img = local_binary_pattern(Xte[0], P=a.lbp_points, R=a.lbp_radius, method="uniform")
+            EX.save_lbp_heatmap(lbp_img, os.path.join(a.outdir, "lbp_heatmap.png"))
+    except Exception:
+        pass
 
     # ===== Deep (optional) =====
     if a.use_deep:
@@ -290,6 +311,8 @@ if __name__ == "__main__":
     ap.add_argument("--outdir", default="plots")
     ap.add_argument("--align-classical", action="store_true", help="Use MTCNN-aligned crops for classical methods")
     ap.add_argument("--eval-buckets", action="store_true", help="Run lighting/quality/occlusion severity sweeps and save metrics")
+    ap.add_argument("--save-splits", type=str, default="", help="Path to save computed splits as JSON")
+    ap.add_argument("--load-splits", type=str, default="", help="Path to load precomputed splits JSON")
 
     # Deep args
     ap.add_argument("--use-deep", action="store_true")

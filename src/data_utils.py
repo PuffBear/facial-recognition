@@ -3,6 +3,7 @@ import os, glob, random
 from typing import Dict, List, Tuple
 import numpy as np
 from PIL import Image
+import json, os.path as osp
 
 IMG_EXTS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
 
@@ -46,6 +47,17 @@ def split_idwise(
         splits["val"].extend((p, pid) for p in v)
         splits["test"].extend((p, pid) for p in s)
     return splits
+
+def save_splits(splits: Dict[str, List[Tuple[str, str]]], outpath: str) -> None:
+    with open(outpath, "w") as f:
+        json.dump({k: splits[k] for k in ["train","val","test"]}, f, indent=2)
+
+def load_splits(path: str) -> Dict[str, List[Tuple[str, str]]]:
+    if not osp.exists(path):
+        raise FileNotFoundError(path)
+    with open(path, "r") as f:
+        obj = json.load(f)
+    return {k: [(p, lab) for p, lab in obj.get(k, [])] for k in ["train","val","test"]}
 
 def load_gray(path: str, size: int = 160) -> np.ndarray:
     """
