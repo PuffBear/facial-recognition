@@ -1,251 +1,251 @@
 [
   {
-    "path": "data/celebs_subset/ANR/ANR_0018.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/ANR/ANR_0018.jpg",
     "true": "ANR",
     "pred": "AamairKhan"
   },
   {
-    "path": "data/celebs_subset/AamairKhan/AamairKhan_0004.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/AamairKhan/AamairKhan_0004.jpg",
     "true": "AamairKhan",
     "pred": "AamairKhan"
   },
   {
-    "path": "data/celebs_subset/AmitabhBachchan/AmitabhBachchan_0016.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/AmitabhBachchan/AmitabhBachchan_0016.jpg",
     "true": "AmitabhBachchan",
     "pred": "Jamuna"
   },
   {
-    "path": "data/celebs_subset/AmrishPuri/AmrishPuri_0007.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/AmrishPuri/AmrishPuri_0007.jpg",
     "true": "AmrishPuri",
     "pred": "AmrishPuri"
   },
   {
-    "path": "data/celebs_subset/Ashwath/Ashwath_0003.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Ashwath/Ashwath_0003.jpg",
     "true": "Ashwath",
     "pred": "nana_patekar"
   },
   {
-    "path": "data/celebs_subset/BomanIrani/BomanIrani_0017.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/BomanIrani/BomanIrani_0017.jpg",
     "true": "BomanIrani",
     "pred": "AmitabhBachchan"
   },
   {
-    "path": "data/celebs_subset/Brahmanandam/Brahmanandam_0009.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Brahmanandam/Brahmanandam_0009.jpg",
     "true": "Brahmanandam",
     "pred": "Brahmanandam"
   },
   {
-    "path": "data/celebs_subset/Chinoy/Chinoy_0005.jpeg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Chinoy/Chinoy_0005.jpeg",
     "true": "Chinoy",
     "pred": "PareshRaval"
   },
   {
-    "path": "data/celebs_subset/Dileep/Dileep_0005.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Dileep/Dileep_0005.jpg",
     "true": "Dileep",
     "pred": "Jagadeesh"
   },
   {
-    "path": "data/celebs_subset/Jagadeesh/Jagadeesh_0005.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Jagadeesh/Jagadeesh_0005.jpg",
     "true": "Jagadeesh",
     "pred": "Ashwath"
   },
   {
-    "path": "data/celebs_subset/Jamuna/Jamuna_0008.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Jamuna/Jamuna_0008.jpg",
     "true": "Jamuna",
     "pred": "Mallikarjunrao"
   },
   {
-    "path": "data/celebs_subset/JayaBhaduri/JayaBhaduri_0013.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/JayaBhaduri/JayaBhaduri_0013.jpg",
     "true": "JayaBhaduri",
     "pred": "richa_chadha"
   },
   {
-    "path": "data/celebs_subset/Jayram/Jayram_0000.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Jayram/Jayram_0000.jpg",
     "true": "Jayram",
     "pred": "Jayram"
   },
   {
-    "path": "data/celebs_subset/Mallikarjunrao/Mallikarjunrao_0000.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Mallikarjunrao/Mallikarjunrao_0000.jpg",
     "true": "Mallikarjunrao",
     "pred": "Mallikarjunrao"
   },
   {
-    "path": "data/celebs_subset/NTR/NTR_0017.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/NTR/NTR_0017.jpg",
     "true": "NTR",
     "pred": "NTR"
   },
   {
-    "path": "data/celebs_subset/PareshRaval/PareshRaval_0017.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/PareshRaval/PareshRaval_0017.jpg",
     "true": "PareshRaval",
     "pred": "PareshRaval"
   },
   {
-    "path": "data/celebs_subset/PrakashRaj/PrakashRaj_0015.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/PrakashRaj/PrakashRaj_0015.jpg",
     "true": "PrakashRaj",
     "pred": "PrakashRaj"
   },
   {
-    "path": "data/celebs_subset/Rahul_A/Rahul_A_0001.jpeg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Rahul_A/Rahul_A_0001.jpeg",
     "true": "Rahul_A",
     "pred": "rishi_kapoor"
   },
   {
-    "path": "data/celebs_subset/RakheeGulzar/RakheeGulzar_0003.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/RakheeGulzar/RakheeGulzar_0003.jpg",
     "true": "RakheeGulzar",
     "pred": "ramya_krishnan"
   },
   {
-    "path": "data/celebs_subset/RishiKapoor/RishiKapoor_0014.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/RishiKapoor/RishiKapoor_0014.jpg",
     "true": "RishiKapoor",
     "pred": "AamairKhan"
   },
   {
-    "path": "data/celebs_subset/Shivaram/Shivaram_0018.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Shivaram/Shivaram_0018.jpg",
     "true": "Shivaram",
     "pred": "Jagadeesh"
   },
   {
-    "path": "data/celebs_subset/Shobana/Shobana_0016.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Shobana/Shobana_0016.jpg",
     "true": "Shobana",
     "pred": "smita_patil"
   },
   {
-    "path": "data/celebs_subset/Shubh/Shubh_0009.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Shubh/Shubh_0009.jpg",
     "true": "Shubh",
     "pred": "Shubh"
   },
   {
-    "path": "data/celebs_subset/Venkatesh/Venkatesh_0013.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/Venkatesh/Venkatesh_0013.jpg",
     "true": "Venkatesh",
     "pred": "Jayram"
   },
   {
-    "path": "data/celebs_subset/abhay_deol/abhay_deol_0011.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/abhay_deol/abhay_deol_0011.jpg",
     "true": "abhay_deol",
     "pred": "abhay_deol"
   },
   {
-    "path": "data/celebs_subset/akshaye_khanna/akshaye_khanna_0013.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/akshaye_khanna/akshaye_khanna_0013.jpg",
     "true": "akshaye_khanna",
     "pred": "akshaye_khanna"
   },
   {
-    "path": "data/celebs_subset/amole_gupte/amole_gupte_0001.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/amole_gupte/amole_gupte_0001.jpg",
     "true": "amole_gupte",
     "pred": "amole_gupte"
   },
   {
-    "path": "data/celebs_subset/amrish_puri/amrish_puri_0008.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/amrish_puri/amrish_puri_0008.jpg",
     "true": "amrish_puri",
     "pred": "om_puri"
   },
   {
-    "path": "data/celebs_subset/anushka_shetty/anushka_shetty_0013.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/anushka_shetty/anushka_shetty_0013.jpg",
     "true": "anushka_shetty",
     "pred": "unknown"
   },
   {
-    "path": "data/celebs_subset/ashish_vidyarthi/ashish_vidyarthi_0018.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/ashish_vidyarthi/ashish_vidyarthi_0018.jpg",
     "true": "ashish_vidyarthi",
     "pred": "ashish_vidyarthi"
   },
   {
-    "path": "data/celebs_subset/dilip_kumar/dilip_kumar_0004.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/dilip_kumar/dilip_kumar_0004.jpg",
     "true": "dilip_kumar",
     "pred": "rishi_kapoor"
   },
   {
-    "path": "data/celebs_subset/gulshan_grover/gulshan_grover_0011.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/gulshan_grover/gulshan_grover_0011.jpg",
     "true": "gulshan_grover",
     "pred": "sanjay_dutt"
   },
   {
-    "path": "data/celebs_subset/jeetendra/jeetendra_0005.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/jeetendra/jeetendra_0005.jpg",
     "true": "jeetendra",
     "pred": "rekha"
   },
   {
-    "path": "data/celebs_subset/kamal_haasan/kamal_haasan_0004.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/kamal_haasan/kamal_haasan_0004.jpg",
     "true": "kamal_haasan",
     "pred": "nana_patekar"
   },
   {
-    "path": "data/celebs_subset/kulbhushan_kharbanda/kulbhushan_kharbanda_0005.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/kulbhushan_kharbanda/kulbhushan_kharbanda_0005.jpg",
     "true": "kulbhushan_kharbanda",
     "pred": "raj_babbar"
   },
   {
-    "path": "data/celebs_subset/lara_dutta/lara_dutta_0011.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/lara_dutta/lara_dutta_0011.jpg",
     "true": "lara_dutta",
     "pred": "Ashwath"
   },
   {
-    "path": "data/celebs_subset/mehmood/mehmood_0005.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/mehmood/mehmood_0005.jpg",
     "true": "mehmood",
     "pred": "abhay_deol"
   },
   {
-    "path": "data/celebs_subset/nana_patekar/nana_patekar_0014.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/nana_patekar/nana_patekar_0014.jpg",
     "true": "nana_patekar",
     "pred": "ashish_vidyarthi"
   },
   {
-    "path": "data/celebs_subset/nawazuddin_siddiqui/nawazuddin_siddiqui_0012.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/nawazuddin_siddiqui/nawazuddin_siddiqui_0012.jpg",
     "true": "nawazuddin_siddiqui",
     "pred": "amrish_puri"
   },
   {
-    "path": "data/celebs_subset/om_puri/om_puri_0005.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/om_puri/om_puri_0005.jpg",
     "true": "om_puri",
     "pred": "unknown"
   },
   {
-    "path": "data/celebs_subset/priyanka_chopra/priyanka_chopra_0018.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/priyanka_chopra/priyanka_chopra_0018.jpg",
     "true": "priyanka_chopra",
     "pred": "richa_chadha"
   },
   {
-    "path": "data/celebs_subset/raj_babbar/raj_babbar_0011.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/raj_babbar/raj_babbar_0011.jpg",
     "true": "raj_babbar",
     "pred": "RishiKapoor"
   },
   {
-    "path": "data/celebs_subset/ramya_krishnan/ramya_krishnan_0011.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/ramya_krishnan/ramya_krishnan_0011.jpg",
     "true": "ramya_krishnan",
     "pred": "anushka_shetty"
   },
   {
-    "path": "data/celebs_subset/rekha/rekha_0007.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/rekha/rekha_0007.jpg",
     "true": "rekha",
     "pred": "rekha"
   },
   {
-    "path": "data/celebs_subset/richa_chadha/richa_chadha_0009.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/richa_chadha/richa_chadha_0009.jpg",
     "true": "richa_chadha",
     "pred": "priyanka_chopra"
   },
   {
-    "path": "data/celebs_subset/rishi_kapoor/rishi_kapoor_0004.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/rishi_kapoor/rishi_kapoor_0004.jpg",
     "true": "rishi_kapoor",
     "pred": "dilip_kumar"
   },
   {
-    "path": "data/celebs_subset/sanjay_dutt/sanjay_dutt_0011.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/sanjay_dutt/sanjay_dutt_0011.jpg",
     "true": "sanjay_dutt",
     "pred": "amole_gupte"
   },
   {
-    "path": "data/celebs_subset/shabana_azmi/shabana_azmi_0010.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/shabana_azmi/shabana_azmi_0010.jpg",
     "true": "shabana_azmi",
     "pred": "smita_patil"
   },
   {
-    "path": "data/celebs_subset/smita_patil/smita_patil_0015.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/smita_patil/smita_patil_0015.jpg",
     "true": "smita_patil",
     "pred": "smita_patil"
   },
   {
-    "path": "data/celebs_subset/waheeda_rehman/waheeda_rehman_0000.jpg",
+    "path": "/Users/Agriya/Desktop/monsoon25/AI/facial-recognition/data/celebs_subset/waheeda_rehman/waheeda_rehman_0000.jpg",
     "true": "waheeda_rehman",
     "pred": "rishi_kapoor"
   }

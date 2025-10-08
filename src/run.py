@@ -12,13 +12,21 @@ from src import data_utils as DU
 from src import classical as CL
 from src import metrics as MT
 from src import deep as DP  # MTCNN + FaceNet embeddings
+from src import aug as AG
 
 
-def load_split_gray(pairs: List[Tuple[str, str]], size: int = 160):
-    """Load a list of (path,label) into grayscale arrays + labels."""
+def load_split_gray(pairs: List[Tuple[str, str]], size: int = 160, align_fn=None):
+    """Load (path,label) into grayscale arrays + labels, with optional alignment."""
     X, y = [], []
     for p, lab in pairs:
-        X.append(DU.load_gray(p, size=size))
+        try:
+            pil = Image.open(p).convert("RGB")
+        except Exception:
+            pil = Image.new("RGB", (size, size), (0, 0, 0))
+        if align_fn is not None:
+            pil = align_fn(pil)
+        pil = pil.resize((size, size)).convert("L")
+        X.append(np.array(pil, dtype=np.uint8))
         y.append(lab)
     return X, y
 
@@ -35,10 +43,15 @@ def main(a):
     if not classes:
         raise SystemExit("No identities met the min_images_per_id requirement.")
 
+    # Optional aligner (MTCNN) used for classical parity when requested
+    aligner = None
+    if a.align_classical:
+        aligner = DP.FaceEmbedder(size=a.image_size, use_pretrained=True).align
+
     # -------- load grayscale for classical --------
-    Xtr, ytr = load_split_gray(splits["train"], size=a.image_size)
-    Xva, yva = load_split_gray(splits["val"], size=a.image_size)
-    Xte, yte = load_split_gray(splits["test"], size=a.image_size)
+    Xtr, ytr = load_split_gray(splits["train"], size=a.image_size, align_fn=aligner)
+    Xva, yva = load_split_gray(splits["val"], size=a.image_size, align_fn=aligner)
+    Xte, yte = load_split_gray(splits["test"], size=a.image_size, align_fn=aligner)
 
     # ===== Eigenfaces =====
     eig_clf, eig_x = CL.make_eigenfaces(pca_components=a.pca_components)
@@ -139,6 +152,94 @@ def main(a):
             )
         print("[Deep]", deep_metrics)
 
+    # ===== Bucketed Stress Tests (optional) =====
+    if a.eval_buckets:
+        os.makedirs(a.outdir, exist_ok=True)
+
+        def prepare_gray_from_pil(pil):
+            if aligner is not None:
+                pil = aligner(pil)
+            pil = pil.resize((a.image_size, a.image_size)).convert("L")
+            return np.array(pil, dtype=np.uint8)
+
+        # Classical predictors on PIL via grayscale conversion
+        def pred_eigen_pil(pil_img):
+            gx = prepare_gray_from_pil(pil_img)
+            return eig_clf.predict([eig_x(gx)])[0]
+
+        def pred_lbp_pil(pil_img):
+            gx = prepare_gray_from_pil(pil_img)
+            return lbp_clf.predict([lbp_x(gx)])[0]
+
+        # Deep predictor on PIL if deep was enabled
+        deep_enabled = a.use_deep
+        if deep_enabled:
+            if a.deep_head == "svm":
+                def pred_deep_pil(pil_img):
+                    emb = E.embed(E.align(pil_img.convert("RGB")))
+                    return head.predict([emb])[0]
+            else:
+                def pred_deep_pil(pil_img):
+                    emb = E.embed(E.align(pil_img.convert("RGB")))
+                    lab, _ = DP.cosine_predict(emb, cents, threshold=a.deep_threshold)
+                    return lab
+
+        def eval_bucket(transform_fn, severities, name_prefix):
+            # Evaluate on transformed test set and save per-severity metrics for each model
+            results = {"eigen": {}, "lbp": {}}
+            if deep_enabled:
+                results["deep"] = {}
+
+            for sev_name, kwargs in severities:
+                ys, ye, yl, yd = [], [], [], []
+                for p, lab in splits["test"]:
+                    try:
+                        pil = Image.open(p).convert("RGB")
+                    except Exception:
+                        pil = Image.new("RGB", (a.image_size, a.image_size), (0, 0, 0))
+                    pil_t = transform_fn(pil, **kwargs)
+                    ys.append(lab)
+                    ye.append(pred_eigen_pil(pil_t))
+                    yl.append(pred_lbp_pil(pil_t))
+                    if deep_enabled:
+                        yd.append(pred_deep_pil(pil_t))
+
+                me, _ = MT.evaluate(lambda v: v, ye, ys)
+                ml, _ = MT.evaluate(lambda v: v, yl, ys)
+                results["eigen"][sev_name] = me
+                results["lbp"][sev_name] = ml
+                if deep_enabled:
+                    md, _ = MT.evaluate(lambda v: v, yd, ys)
+                    results["deep"][sev_name] = md
+
+            MT.save_json(results, os.path.join(a.outdir, f"buckets_{name_prefix}.json"))
+
+        # Lighting: brightness and contrast sweeps
+        lighting_sev = [
+            ("b0.7_c0.8", {"brightness": 0.7, "contrast": 0.8}),
+            ("b0.85_c0.9", {"brightness": 0.85, "contrast": 0.9}),
+            ("b1.15_c1.1", {"brightness": 1.15, "contrast": 1.1}),
+            ("b1.3_c1.2", {"brightness": 1.3, "contrast": 1.2}),
+        ]
+        eval_bucket(lambda im, **k: AG.adjust_brightness_contrast(im, **k), lighting_sev, "lighting")
+
+        # Image quality: noise, blur, jpeg
+        noise_sev = [(f"sigma{int(s)}", {"sigma": float(s)}) for s in [5, 10, 20, 30]]
+        eval_bucket(lambda im, **k: AG.add_gaussian_noise(im, **k), noise_sev, "noise")
+
+        blur_sev = [(f"r{r}", {"radius": float(r)}) for r in [1.0, 2.0, 3.0]]
+        eval_bucket(lambda im, **k: AG.gaussian_blur(im, **k), blur_sev, "blur")
+
+        jpeg_sev = [(f"q{q}", {"quality": int(q)}) for q in [70, 50, 30, 15]]
+        eval_bucket(lambda im, **k: AG.jpeg_compress(im, **k), jpeg_sev, "jpeg")
+
+        # Occlusions: eyes and mouth
+        eyes_sev = [(f"eyes_h{h}", {"frac_height": h}) for h in [0.15, 0.20, 0.25]]
+        eval_bucket(lambda im, **k: AG.occlude_eyes(im, **k), eyes_sev, "occl_eyes")
+
+        mouth_sev = [(f"mouth_h{h}", {"frac_height": h}) for h in [0.20, 0.25, 0.30]]
+        eval_bucket(lambda im, **k: AG.occlude_mouth(im, **k), mouth_sev, "occl_mouth")
+
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -155,6 +256,8 @@ if __name__ == "__main__":
     ap.add_argument("--lbp-points", type=int, default=16)  # typical: 8, 16, 24
 
     ap.add_argument("--outdir", default="plots")
+    ap.add_argument("--align-classical", action="store_true", help="Use MTCNN-aligned crops for classical methods")
+    ap.add_argument("--eval-buckets", action="store_true", help="Run lighting/quality/occlusion severity sweeps and save metrics")
 
     # Deep args
     ap.add_argument("--use-deep", action="store_true")
