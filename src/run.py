@@ -14,6 +14,7 @@ from src import metrics as MT
 from src import deep as DP  # MTCNN + FaceNet embeddings
 from src import aug as AG
 from src import explain as EX
+from src import bias as BS
 import hashlib, os.path as osp, json as _json
 
 
@@ -293,6 +294,36 @@ def main(a):
         mouth_sev = [(f"mouth_h{h}", {"frac_height": h}) for h in [0.20, 0.25, 0.30]]
         eval_bucket(lambda im, **k: AG.occlude_mouth(im, **k), mouth_sev, "occl_mouth")
 
+    # ===== Bias analysis (optional, requires group map) =====
+    if a.bias_groups or a.auto_bias_gender or a.auto_bias_name:
+        try:
+            if a.bias_groups:
+                with open(a.bias_groups, 'r') as f:
+                    group_map = json.load(f)
+            elif a.auto_bias_gender:
+                # Build id->paths from current split
+                id2 = {}
+                for k in ("train","val","test"):
+                    for p, lab in splits[k]:
+                        id2.setdefault(lab, []).append(p)
+                group_map = BS.infer_gender_groups_for_ids(id2)
+            elif a.auto_bias_name:
+                labels = sorted({lab for _, lab in splits["train"] + splits["val"] + splits["test"]})
+                group_map = BS.infer_gender_groups_by_name(labels)
+            # build predictions from last evaluated deep/classical model; prefer deep if available
+            pairs = []
+            if a.use_deep:
+                y_true = [lab for _, lab in splits["test"]]
+                y_pred = [pred_path(p) for p, _ in splits["test"]]
+                pairs = list(zip(y_true, y_pred))
+            elif Xte:
+                pairs = list(zip(yte, [eig_pred(x) for x in Xte]))
+            stats = BS.compute_group_metrics(pairs, group_map)
+            BS.save_group_metrics(stats, os.path.join(a.outdir, "bias_groups.json"))
+            BS.plot_group_metrics(stats, os.path.join(a.outdir, "bias_groups.png"))
+        except Exception as e:
+            print("[Bias] skipped:", e)
+
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -313,6 +344,9 @@ if __name__ == "__main__":
     ap.add_argument("--eval-buckets", action="store_true", help="Run lighting/quality/occlusion severity sweeps and save metrics")
     ap.add_argument("--save-splits", type=str, default="", help="Path to save computed splits as JSON")
     ap.add_argument("--load-splits", type=str, default="", help="Path to load precomputed splits JSON")
+    ap.add_argument("--bias-groups", type=str, default="", help="Path to JSON mapping label->group for bias analysis")
+    ap.add_argument("--auto-bias-gender", action="store_true", help="Infer gender groups per identity using DeepFace")
+    ap.add_argument("--auto-bias-name", action="store_true", help="Infer gender groups by first-name heuristic using gender-guesser")
 
     # Deep args
     ap.add_argument("--use-deep", action="store_true")
