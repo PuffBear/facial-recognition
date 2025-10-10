@@ -4,7 +4,9 @@ opencv-python
 scikit-learn
 albumentations
 matplotlib
-numpy pandas
+numpy
+pandas
 tqdm
-# Grad-CAM helper (pick one)
+pillow
 pytorch-grad-cam
+onnxruntime
