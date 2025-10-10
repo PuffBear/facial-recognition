@@ -1,0 +1,32 @@
+data:
+  root: data/
+  ids: 30 # target identities
+  imgs_per_id: 30
+  splits: {train: 0.6, val: 0.2, test: 0.2}
+  aligned_size: 112
+
+models:
+  base: arcface # arcface | adaface | lbp
+  arcface: {name: buffalo_l} # InsightFace model tag
+  adaface: {weights: adaface_ir101_ms1mv3.pth} # put in models/
+  lbp: {grid: [8,8], radius: 2, n_points: 16}
+
+eval:
+  unknown:
+    tune_on: val
+    metric: f1
+  metrics: [top1, precision, recall, f1]
+  verification: false
+
+robustness:
+  lighting: {brightness: [0.8, 0.6], contrast: [0.8, 0.6]}
+  quality:
+    gaussian_noise_sigma: [5, 15, 25]
+    gaussian_blur_ksize: [3, 7, 11]
+    jpeg_quality: [90, 50, 20]
+  occlusion:
+    eye_bar_frac_h: [0.15, 0.3]
+    mouth_mask_frac_h: [0.2, 0.35]
+    full_mask_frac_h: [0.5]
+bias:
+  attrs: [Male, Young, Wearing_Lipstick, Blond_Hair] # CelebA examples

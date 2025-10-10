@@ -1,0 +1,10 @@
+torch torchvision
+insightface>=0.7
+opencv-python
+scikit-learn
+albumentations
+matplotlib
+numpy pandas
+tqdm
+# Grad-CAM helper (pick one)
+pytorch-grad-cam
