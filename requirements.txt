@@ -10,3 +10,4 @@ torchvision
 facenet-pytorch
 Pillow
 kaggle
+requests
