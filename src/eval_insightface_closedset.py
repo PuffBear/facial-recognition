@@ -25,7 +25,7 @@ except Exception:
 from insightface.model_zoo import get_model
 
 IMG_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
-
+ 
 def iter_split(root: Path):
     X, y = [], []
     for cls in sorted(p.name for p in root.iterdir() if p.is_dir()):
