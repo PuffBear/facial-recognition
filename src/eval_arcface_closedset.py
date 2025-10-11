@@ -40,8 +40,8 @@ def build_prototypes(train_embs, train_labels):
 def predict(embs, ids, protos):
     # cosine similarity to class prototypes
     embs = embs / (np.linalg.norm(embs, axis=1, keepdims=True)+1e-9)
-    sims = embs @ protos.T                     # [N,C]
-    idx = np.argmax(sims, axis=1)              # best class
+    sims = embs @ protos.T # [N,C]
+    idx = np.argmax(sims, axis=1) # best class
     return [ids[i] for i in idx], sims.max(1)
 
 def main(data_root, out_txt):
@@ -56,7 +56,7 @@ def main(data_root, out_txt):
 
     # embedder (recognizer on)
     app = FaceAnalysis(name="buffalo_l")
-    app.prepare(ctx_id=-1, det_size=(224,224))  # CPU ok; crops are already faces
+    app.prepare(ctx_id=-1, det_size=(224,224)) # CPU ok; crops are already faces
 
     train_E = embed_images(train_paths, app)
     ids, protos = build_prototypes(train_E, train_y)

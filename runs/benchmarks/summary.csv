@@ -1,0 +1,7 @@
+model,split,accuracy,macro_f1,usable,total
+deep:buffalo_l,val,0.9394,0.9332,132,186
+deep:buffalo_l,test,0.9527,0.9488,148,183
+deep:antelopev2,val,0.9318,0.9172,132,186
+deep:antelopev2,test,0.9459,0.9466,148,183
+classical:lbp_svm,val,0.2527,0.2298,186,186
+classical:lbp_svm,test,0.2459,0.2436,183,183
