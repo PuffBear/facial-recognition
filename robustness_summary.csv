@@ -1,0 +1,4 @@
+Model,Mean Accuracy,Std Dev,Min Accuracy,Max Accuracy
+Buffalo_L,0.0,0.0,0.0,0.0
+AntelopeV2,0.0,0.0,0.0,0.0
+LBP+SVM,0.0513,0.013,0.03,0.07

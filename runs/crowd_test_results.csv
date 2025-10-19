@@ -1,0 +1,11 @@
+image,num_faces_detected,num_recognized,recognition_rate
+crowd4.jpg,4,2,0.5
+crowd5.jpg,2,0,0.0
+crowd7.jpg,2,1,0.5
+crowd6.jpg,3,0,0.0
+crowd2.jpg,6,0,0.0
+crowd3.jpg,2,2,1.0
+crowd1.jpg,2,0,0.0
+crowd10.jpg,2,1,0.5
+crowd8.jpg,2,1,0.5
+crowd9.jpg,2,2,1.0

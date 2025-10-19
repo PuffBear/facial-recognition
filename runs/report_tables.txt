@@ -1,0 +1,20 @@
+======================================================================
+COMPREHENSIVE RESULTS SUMMARY FOR REPORT
+======================================================================
+
+     Model  Val Accuracy  Test Accuracy  Macro F1 Parameters
+ Buffalo_L        0.9394         0.9527    0.9488        50M
+AntelopeV2        0.9318         0.9459    0.9466       100M
+   LBP+SVM        0.2527         0.2459    0.2436        <1M
+
+     Model Original Lighting Noise  Blur  JPEG Occlusion
+ Buffalo_L    0.467    0.450 0.411 0.469 0.453     0.342
+AntelopeV2    0.520    0.520 0.369 0.358 0.498     0.356
+   LBP+SVM    0.121    0.117 0.107 0.122 0.118     0.089
+
+model   AntelopeV2  Buffalo_L
+group                        
+dark      0.566038   0.528302
+light     0.200000   0.200000
+medium    0.472000   0.432000
+

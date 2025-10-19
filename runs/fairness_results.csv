@@ -1,0 +1,7 @@
+group,accuracy,detection_rate,total_samples,model
+dark,0.5283018867924528,1.0,53,Buffalo_L
+medium,0.432,1.0,125,Buffalo_L
+light,0.2,1.0,5,Buffalo_L
+dark,0.5660377358490566,1.0,53,AntelopeV2
+medium,0.472,1.0,125,AntelopeV2
+light,0.2,1.0,5,AntelopeV2
