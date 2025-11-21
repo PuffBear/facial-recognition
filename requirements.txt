@@ -10,3 +10,4 @@ tqdm
 pillow
 pytorch-grad-cam
 onnxruntime
+gradio
