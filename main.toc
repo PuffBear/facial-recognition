@@ -1,0 +1,42 @@
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Research Objectives}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Dataset Overview}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Significance}{3}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Dataset \& Methodology}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Dataset Characteristics}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Models Evaluated}{5}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Deep Learning Models}{5}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Classical Baseline}{5}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Evaluation Protocol}{5}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Model Performance}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Baseline Results}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Analysis: Why Deep Learning Dominates}{6}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Robustness Analysis}{6}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Performance Under Degradation}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Detailed Findings}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Model Comparison}{8}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Explainability}{8}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Classical Model: LBP+SVM}{8}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Deep Models: Attention Analysis}{9}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Interpretability-Accuracy Trade-off}{10}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Fairness \& Bias Analysis}{10}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Methodology}{10}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Results}{11}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Analysis and Implications}{11}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Advanced Testing}{12}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Crowd Image Recognition}{12}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}AI-Generated Faces: Security Analysis}{13}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Test 1: False Acceptance Rate}{13}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Test 2: AI Detection via Artifact Analysis}{13}{subsubsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.3}Security Implications}{15}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Ethical Considerations}{16}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Privacy \& Surveillance}{16}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Bias \& Discrimination}{16}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Dual-Use \& Misuse}{17}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Consent \& Autonomy}{17}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Recommendations for Responsible Deployment}{17}{subsection.8.5}%
+\contentsline {section}{\numberline {9}Conclusion}{18}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Summary of Findings}{18}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Limitations}{18}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Future Work}{18}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Final Remarks}{19}{subsection.9.4}%

@@ -1,0 +1,13 @@
+\begin{thebibliography}{1}
+
+\bibitem{buolamwini2018gender}
+Joy Buolamwini and Timnit Gebru.
+\newblock Gender shades: Intersectional accuracy disparities in commercial gender classification.
+\newblock In {\em Conference on fairness, accountability and transparency}, pages 77--91. PMLR, 2018.
+
+\bibitem{grother2019demographic}
+Patrick Grother, Mei Ngan, and Kayee Hanaoka.
+\newblock Face recognition vendor test (frvt) part 3: Demographic effects.
+\newblock Technical report, National Institute of Standards and Technology, 2019.
+
+\end{thebibliography}

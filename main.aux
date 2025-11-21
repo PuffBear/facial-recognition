@@ -1,0 +1,94 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{deng2019arcface}
+\citation{buolamwini2018gender}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{3}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Research Objectives}{3}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Dataset Overview}{3}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Significance}{3}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Dataset \& Methodology}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Dataset Characteristics}{3}{subsection.2.1}\protected@file@percent }
+\citation{deng2019arcface}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Class distribution showing severe imbalance ($\mu =164.8$, $\sigma =106.3$, range=[14,620]). This reflects real-world data where celebrity documentation varies widely.}}{4}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:class_counts}{{1}{4}{Class distribution showing severe imbalance ($\mu =164.8$, $\sigma =106.3$, range=[14,620]). This reflects real-world data where celebrity documentation varies widely}{figure.caption.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Quality metrics: (Left) Aspect ratio distribution peaked near 1.0 (square faces). (Center) Brightness approximately Gaussian with $\mu \approx 100$. (Right) Heavy blur variance skew indicates quality issues in subset of images.}}{4}{figure.caption.2}\protected@file@percent }
+\newlabel{fig:quality}{{2}{4}{Quality metrics: (Left) Aspect ratio distribution peaked near 1.0 (square faces). (Center) Brightness approximately Gaussian with $\mu \approx 100$. (Right) Heavy blur variance skew indicates quality issues in subset of images}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Models Evaluated}{5}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}Deep Learning Models}{5}{subsubsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Classical Baseline}{5}{subsubsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Evaluation Protocol}{5}{subsection.2.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Robustness test conditions applied to evaluate model resilience.}}{5}{table.caption.3}\protected@file@percent }
+\newlabel{tab:perturbations}{{1}{5}{Robustness test conditions applied to evaluate model resilience}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Model Performance}{5}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Baseline Results}{5}{subsection.3.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Comparative model performance on clean validation and test sets.}}{6}{table.caption.4}\protected@file@percent }
+\newlabel{tab:performance}{{2}{6}{Comparative model performance on clean validation and test sets}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Analysis: Why Deep Learning Dominates}{6}{subsection.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Embedding separation: Intra-class similarities (to own centroid) cluster near 0.8-1.0, while inter-class centroid similarities remain $<$0.4. Clear separation enables high accuracy.}}{6}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:embeddings}{{3}{6}{Embedding separation: Intra-class similarities (to own centroid) cluster near 0.8-1.0, while inter-class centroid similarities remain $<$0.4. Clear separation enables high accuracy}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Robustness Analysis}{6}{section.4}\protected@file@percent }
+\citation{nist2020masks}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Performance Under Degradation}{7}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Robustness results: Average accuracy by perturbation category (150 samples/condition).}}{7}{table.caption.6}\protected@file@percent }
+\newlabel{tab:robustness}{{3}{7}{Robustness results: Average accuracy by perturbation category (150 samples/condition)}{table.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Comprehensive robustness analysis: (Top-left) Accuracy by condition. (Top-right) Detection rates remain 100\% since images are pre-aligned. (Bottom-left) Performance by category shows occlusion as worst. (Bottom-right) Degradation curves relative to original performance.}}{7}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:robustness}{{4}{7}{Comprehensive robustness analysis: (Top-left) Accuracy by condition. (Top-right) Detection rates remain 100\% since images are pre-aligned. (Bottom-left) Performance by category shows occlusion as worst. (Bottom-right) Degradation curves relative to original performance}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Detailed Findings}{7}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Model Comparison}{8}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Explainability}{8}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Classical Model: LBP+SVM}{8}{subsection.5.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces LBP explainability: (Top) Original faces. (Middle) LBP pattern visualization showing encoded textures. (Bottom) LBP histograms capturing texture distribution. Patterns are human-interpretable but lack semantic understanding of "face."}}{9}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:lbp}{{5}{9}{LBP explainability: (Top) Original faces. (Middle) LBP pattern visualization showing encoded textures. (Bottom) LBP histograms capturing texture distribution. Patterns are human-interpretable but lack semantic understanding of "face."}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Deep Models: Attention Analysis}{9}{subsection.5.2}\protected@file@percent }
+\citation{peterson2012eye}
+\citation{buolamwini2018gender,grother2019demographic}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Deep model attention: (Left) Original image. (Middle) Attention heatmap showing critical regions. (Right) Overlay. Eyes and nose trigger largest embedding changes, aligning with human face recognition strategies.}}{10}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:attention}{{6}{10}{Deep model attention: (Left) Original image. (Middle) Attention heatmap showing critical regions. (Right) Overlay. Eyes and nose trigger largest embedding changes, aligning with human face recognition strategies}{figure.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Interpretability-Accuracy Trade-off}{10}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Fairness \& Bias Analysis}{10}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Methodology}{10}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Results}{11}{subsection.6.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Fairness analysis: Accuracy by skin tone proxy (brightness-based categorization).}}{11}{table.caption.10}\protected@file@percent }
+\newlabel{tab:fairness}{{4}{11}{Fairness analysis: Accuracy by skin tone proxy (brightness-based categorization)}{table.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Fairness analysis: (Left) Accuracy by group shows significant disparities. (Right) Dataset distribution heavily skewed toward medium brightness (250/313 samples). Light group ($n=10$) too small for robust conclusions.}}{11}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:fairness}{{7}{11}{Fairness analysis: (Left) Accuracy by group shows significant disparities. (Right) Dataset distribution heavily skewed toward medium brightness (250/313 samples). Light group ($n=10$) too small for robust conclusions}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Analysis and Implications}{11}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Advanced Testing}{12}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Crowd Image Recognition}{12}{subsection.7.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Crowd image recognition performance (multi-face scenario testing).}}{12}{table.caption.12}\protected@file@percent }
+\newlabel{tab:crowd}{{5}{12}{Crowd image recognition performance (multi-face scenario testing)}{table.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Crowd testing analysis: (Left) Detection vs. recognition shows gap between finding faces and identifying them. (Right) Recognition rate distribution across images is highly variable (0-100\%).}}{13}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:crowd}{{8}{13}{Crowd testing analysis: (Left) Detection vs. recognition shows gap between finding faces and identifying them. (Right) Recognition rate distribution across images is highly variable (0-100\%)}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}AI-Generated Faces: Security Analysis}{13}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.1}Test 1: False Acceptance Rate}{13}{subsubsection.7.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.2}Test 2: AI Detection via Artifact Analysis}{13}{subsubsection.7.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces AI face detection classifier performance (Real vs. AI discrimination).}}{14}{table.caption.14}\protected@file@percent }
+\newlabel{tab:ai_classifier}{{6}{14}{AI face detection classifier performance (Real vs. AI discrimination)}{table.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Feature importance for AI detection: Edge artifacts (FFT frequency anomalies) provide strongest signal (58\% importance), enabling perfect classification.}}{14}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:ai_importance}{{9}{14}{Feature importance for AI detection: Edge artifacts (FFT frequency anomalies) provide strongest signal (58\% importance), enabling perfect classification}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Feature distributions comparing real vs. AI faces: Edge artifacts show clear separation (AI faces $\approx $64× higher), while other features exhibit overlap.}}{15}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:ai_distributions}{{10}{15}{Feature distributions comparing real vs. AI faces: Edge artifacts show clear separation (AI faces $\approx $64× higher), while other features exhibit overlap}{figure.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Security Implications}{15}{subsection.7.3}\protected@file@percent }
+\citation{buolamwini2018gender}
+\@writefile{toc}{\contentsline {section}{\numberline {8}Ethical Considerations}{16}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1}Privacy \& Surveillance}{16}{subsection.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2}Bias \& Discrimination}{16}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3}Dual-Use \& Misuse}{17}{subsection.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.4}Consent \& Autonomy}{17}{subsection.8.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.5}Recommendations for Responsible Deployment}{17}{subsection.8.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion}{18}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.1}Summary of Findings}{18}{subsection.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.2}Limitations}{18}{subsection.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.3}Future Work}{18}{subsection.9.3}\protected@file@percent }
+\bibstyle{plain}
+\bibdata{references}
+\bibcite{buolamwini2018gender}{1}
+\bibcite{deng2019arcface}{2}
+\bibcite{grother2019demographic}{3}
+\bibcite{nist2020masks}{4}
+\bibcite{peterson2012eye}{5}
+\@writefile{toc}{\contentsline {subsection}{\numberline {9.4}Final Remarks}{19}{subsection.9.4}\protected@file@percent }
+\gdef \@abspage@last{19}
