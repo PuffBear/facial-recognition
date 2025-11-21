@@ -26,64 +26,90 @@ class FaceRecognitionSystem:
         self.prototypes = None
         self.loaded = False
         self.loading = False
-        
+        self.demo_mode = False  # True if running without training data
+
     def load_model(self):
         """Load Buffalo_L model and compute class prototypes"""
         if self.loading:
             return "⏳ Model is already loading, please wait..."
-        
+
         if self.loaded:
+            if self.demo_mode:
+                return "✅ Model loaded in DEMO MODE (face detection only)."
             return f"✅ Model already loaded! {len(self.ids)} celebrities ready."
-        
+
         self.loading = True
-        
+
         try:
             print("Loading Buffalo_L model...")
             self.app = FaceAnalysis(name="buffalo_l")
             self.app.prepare(ctx_id=-1, det_size=(640, 640))
-            
-            print("Computing class prototypes from training data...")
+            print("✅ Buffalo_L model loaded successfully!")
+
+            # Check if training data exists
             train_root = self.data_root / "train"
-            
+
             if not train_root.exists():
+                print(f"⚠️ Training data not found at {train_root}")
+                print("Switching to DEMO MODE (face detection + embedding only)...")
+
+                # Load known celebrity IDs from confusion.txt if available
+                confusion_path = Path("runs/arcface_base/confusion.txt")
+                if confusion_path.exists():
+                    with open(confusion_path, 'r') as f:
+                        lines = f.readlines()
+                        if len(lines) >= 2 and lines[0].startswith("IDS:"):
+                            self.ids = lines[1].strip().split(',')
+                            print(f"📋 Loaded {len(self.ids)} celebrity names from previous run")
+
+                self.demo_mode = True
+                self.loaded = True
                 self.loading = False
-                return f"❌ Error: Training data not found at {train_root}"
-            
+
+                status_msg = "✅ Model loaded in DEMO MODE!\n\n"
+                status_msg += "📌 Face detection and embedding extraction are available.\n"
+                status_msg += "⚠️ Classification is limited (no training data).\n"
+                if self.ids:
+                    status_msg += f"📋 Known celebrities: {len(self.ids)} (from previous run)"
+                return status_msg
+
+            print("Computing class prototypes from training data...")
+
             # Load training images
             train_embeddings = []
             train_labels = []
-            
+
             class_dirs = [d for d in sorted(train_root.iterdir()) if d.is_dir()]
             print(f"Found {len(class_dirs)} celebrity classes")
-            
+
             # ENHANCED ERROR TRACKING
             failed_classes = []
             successful_classes = []
-            
+
             for idx, cls_dir in enumerate(class_dirs, 1):
                 cls_name = cls_dir.name
                 image_paths = list(cls_dir.glob("*.jpg"))
-                
+
                 if not image_paths:
                     print(f"  ⚠️  No .jpg images found in {cls_name}, trying other formats...")
                     # Try other common image formats
                     image_paths = list(cls_dir.glob("*.png")) + list(cls_dir.glob("*.jpeg"))
-                
+
                 # Use only 3 images per class for FAST prototype computation
                 image_paths = image_paths[:3]
-                
+
                 class_embeddings_count = 0
                 for img_path in image_paths:
                     img = cv2.imread(str(img_path))
                     if img is None:
                         print(f"  ⚠️  Could not read image: {img_path}")
                         continue
-                    
+
                     # Check if image is valid
                     if img.size == 0:
                         print(f"  ⚠️  Empty image: {img_path}")
                         continue
-                    
+
                     faces = self.app.get(img)
                     if faces:
                         train_embeddings.append(faces[0].normed_embedding)
@@ -91,57 +117,54 @@ class FaceRecognitionSystem:
                         class_embeddings_count += 1
                     else:
                         print(f"  ⚠️  No face detected in: {img_path.name}")
-                
+
                 if class_embeddings_count == 0:
                     failed_classes.append(cls_name)
                     print(f"  ❌ No embeddings extracted for {cls_name}")
                 else:
                     successful_classes.append(cls_name)
-                
+
                 # Progress feedback with running total
                 if idx % 5 == 0:
                     print(f"  Processed {idx}/{len(class_dirs)} celebrities... ({len(train_embeddings)} embeddings so far)")
-            
+
             # Final summary
             print(f"\n📊 Processing Summary:")
             print(f"  Total embeddings: {len(train_embeddings)}")
             print(f"  Successful classes: {len(successful_classes)}/{len(class_dirs)}")
             print(f"  Failed classes: {len(failed_classes)}")
-            
+
             if failed_classes:
-                print(f"  Classes with no embeddings: {', '.join(failed_classes[:10])}" + 
+                print(f"  Classes with no embeddings: {', '.join(failed_classes[:10])}" +
                       (f" (and {len(failed_classes)-10} more)" if len(failed_classes) > 10 else ""))
-            
+
             if not train_embeddings:
+                # Fall back to demo mode
+                print("⚠️ No embeddings computed, switching to DEMO MODE...")
+                self.demo_mode = True
+                self.loaded = True
                 self.loading = False
-                error_msg = "❌ Error: No face embeddings could be computed from training data\n\n"
-                error_msg += f"Possible issues:\n"
-                error_msg += f"1. Images may not be aligned/cropped faces\n"
-                error_msg += f"2. Image format issues (found {len(class_dirs)} classes but got 0 embeddings)\n"
-                error_msg += f"3. Face detection is failing on all images\n\n"
-                error_msg += f"Try checking: {train_root}"
-                print(error_msg)
-                return error_msg
-            
+                return "✅ Model loaded in DEMO MODE (face detection only - no training embeddings computed)."
+
             print(f"✅ Successfully computed {len(train_embeddings)} embeddings")
-            
+
             # Build prototypes (mean embedding per class)
             buckets = defaultdict(list)
             for emb, label in zip(train_embeddings, train_labels):
                 buckets[label].append(emb)
-            
+
             self.ids = sorted(buckets.keys())
             proto_list = [np.mean(buckets[cls_id], axis=0) for cls_id in self.ids]
             self.prototypes = np.stack(proto_list, axis=0)
-            
+
             # L2 normalize prototypes
             self.prototypes = self.prototypes / (np.linalg.norm(self.prototypes, axis=1, keepdims=True) + 1e-9)
-            
+
             self.loaded = True
             self.loading = False
             print(f"✅ Model loaded successfully! {len(self.ids)} celebrities ready.")
             return f"✅ Model loaded! {len(self.ids)} celebrities in database ({len(train_embeddings)} total embeddings)."
-        
+
         except Exception as e:
             self.loading = False
             import traceback
@@ -159,91 +182,120 @@ class FaceRecognitionSystem:
         """
         if not self.loaded:
             return None, "❌ Model not loaded! Click 'Load Model' first."
-        
+
         # Convert RGB to BGR for OpenCV
         img_bgr = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        
+
         # Detect faces
         faces = self.app.get(img_bgr)
-        
+
         if not faces:
             return image, "❌ No faces detected in the image."
-        
+
         # Create annotated image
         fig, ax = plt.subplots(figsize=(10, 10))
         ax.imshow(image)
         ax.axis('off')
-        
+
         results_text = f"**🔍 Detected {len(faces)} face(s)**\n\n"
-        
+
+        # Check if we're in demo mode (no prototypes available)
+        can_classify = self.prototypes is not None and len(self.prototypes) > 0
+
+        if self.demo_mode and not can_classify:
+            results_text += "⚠️ **DEMO MODE**: Classification unavailable (no training data).\n"
+            results_text += "Showing face detection and embedding info only.\n\n"
+
         # Process each detected face
         for idx, face in enumerate(faces):
             # Get bounding box
             bbox = face.bbox.astype(int)
             x1, y1, x2, y2 = bbox
-            
+
             # Draw bounding box
             rect = patches.Rectangle(
                 (x1, y1), x2 - x1, y2 - y1,
                 linewidth=3, edgecolor='lime', facecolor='none'
             )
             ax.add_patch(rect)
-            
-            # Get embedding and classify
+
+            # Get embedding
             embedding = face.normed_embedding.reshape(1, -1)
             embedding = embedding / (np.linalg.norm(embedding) + 1e-9)
-            
-            # Compute similarities to all class prototypes
-            similarities = (embedding @ self.prototypes.T).flatten()
-            
-            # Get top-5 predictions
-            top_k = min(5, len(self.ids))
-            top_indices = np.argsort(similarities)[::-1][:top_k]
-            
-            # Get the best match
-            best_idx = top_indices[0]
-            best_name = self.ids[best_idx]
-            best_score = similarities[best_idx]
-            
-            # Convert cosine similarity to percentage
-            confidence = (best_score + 1) / 2 * 100  # Map [-1,1] to [0,100]
-            
-            # Add label to image
-            label = f"{best_name}: {confidence:.1f}%"
-            ax.text(
-                x1, y1 - 10,
-                label,
-                bbox=dict(boxstyle='round,pad=0.5', facecolor='lime', alpha=0.8),
-                fontsize=12, color='black', weight='bold'
-            )
-            
-            # Add to results text
-            results_text += f"### Face #{idx + 1}\n"
-            results_text += f"**📍 Location:** ({x1}, {y1}) to ({x2}, {y2})\n\n"
-            results_text += "**🎯 Top Predictions:**\n\n"
-            
-            for rank, pred_idx in enumerate(top_indices, 1):
-                pred_name = self.ids[pred_idx]
-                pred_score = similarities[pred_idx]
-                pred_confidence = (pred_score + 1) / 2 * 100
-                
-                # Create confidence bar
-                bar_length = int(pred_confidence / 5)
-                bar = "█" * bar_length + "░" * (20 - bar_length)
-                
-                results_text += f"{rank}. **{pred_name}**\n"
-                results_text += f"   {bar} {pred_confidence:.2f}%\n"
-                results_text += f"   (cosine similarity: {pred_score:.4f})\n\n"
-            
-            results_text += "---\n\n"
-        
+
+            if can_classify:
+                # Full classification mode
+                # Compute similarities to all class prototypes
+                similarities = (embedding @ self.prototypes.T).flatten()
+
+                # Get top-5 predictions
+                top_k = min(5, len(self.ids))
+                top_indices = np.argsort(similarities)[::-1][:top_k]
+
+                # Get the best match
+                best_idx = top_indices[0]
+                best_name = self.ids[best_idx]
+                best_score = similarities[best_idx]
+
+                # Convert cosine similarity to percentage
+                confidence = (best_score + 1) / 2 * 100  # Map [-1,1] to [0,100]
+
+                # Add label to image
+                label = f"{best_name}: {confidence:.1f}%"
+                ax.text(
+                    x1, y1 - 10,
+                    label,
+                    bbox=dict(boxstyle='round,pad=0.5', facecolor='lime', alpha=0.8),
+                    fontsize=12, color='black', weight='bold'
+                )
+
+                # Add to results text
+                results_text += f"### Face #{idx + 1}\n"
+                results_text += f"**📍 Location:** ({x1}, {y1}) to ({x2}, {y2})\n\n"
+                results_text += "**🎯 Top Predictions:**\n\n"
+
+                for rank, pred_idx in enumerate(top_indices, 1):
+                    pred_name = self.ids[pred_idx]
+                    pred_score = similarities[pred_idx]
+                    pred_confidence = (pred_score + 1) / 2 * 100
+
+                    # Create confidence bar
+                    bar_length = int(pred_confidence / 5)
+                    bar = "█" * bar_length + "░" * (20 - bar_length)
+
+                    results_text += f"{rank}. **{pred_name}**\n"
+                    results_text += f"   {bar} {pred_confidence:.2f}%\n"
+                    results_text += f"   (cosine similarity: {pred_score:.4f})\n\n"
+
+                results_text += "---\n\n"
+            else:
+                # Demo mode - just show detection info
+                det_score = float(getattr(face, 'det_score', 0.0))
+
+                # Add label to image
+                label = f"Face #{idx + 1} ({det_score:.2f})"
+                ax.text(
+                    x1, y1 - 10,
+                    label,
+                    bbox=dict(boxstyle='round,pad=0.5', facecolor='orange', alpha=0.8),
+                    fontsize=12, color='black', weight='bold'
+                )
+
+                # Add to results text
+                results_text += f"### Face #{idx + 1}\n"
+                results_text += f"**📍 Location:** ({x1}, {y1}) to ({x2}, {y2})\n"
+                results_text += f"**🎯 Detection Score:** {det_score:.4f}\n"
+                results_text += f"**📐 Face Size:** {x2-x1}x{y2-y1} pixels\n"
+                results_text += f"**🔢 Embedding:** 512-dimensional vector extracted\n\n"
+                results_text += "---\n\n"
+
         # Convert matplotlib figure to image
         buf = io.BytesIO()
         plt.savefig(buf, format='png', bbox_inches='tight', dpi=150)
         buf.seek(0)
         annotated_img = Image.open(buf)
         plt.close(fig)
-        
+
         return annotated_img, results_text
 
 # ==================== GRADIO INTERFACE ====================
