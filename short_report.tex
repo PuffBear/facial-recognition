@@ -1,0 +1,285 @@
+\documentclass[11pt,a4paper]{article}
+
+% ========== PACKAGES ==========
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+% ========== COLOR SCHEME ==========
+\definecolor{primary}{RGB}{0,102,204}
+\definecolor{secondary}{RGB}{102,102,102}
+\definecolor{accent}{RGB}{204,0,0}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    citecolor=primary,
+    urlcolor=primary,
+}
+
+% Custom section formatting
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{primary}\normalfont\Large\bfseries}
+  {\color{primary}\thesection}{1em}{}
+\titleformat{\subsection}
+  {\color{secondary}\normalfont\large\bfseries}
+  {\color{secondary}\thesubsection}{1em}{}
+
+% ========== TITLE ==========
+\title{
+    \vspace{-1.5cm}
+    \textbf{\color{primary}\Large Face Recognition System Evaluation:\\
+    Performance, Robustness, and Ethics}
+}
+
+\author{
+    \textbf{Agriya Yadav} (1020231092)\\
+    CS-4440: Artificial Intelligence\\
+    Ashoka University\\
+    \textit{Instructor: Prof. Lipika Dey}
+}
+
+\date{October 19, 2025}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+\noindent
+We evaluate face recognition across classical (LBP+SVM) and deep learning approaches (Buffalo\_L, AntelopeV2) on 40,709 images spanning 247 identities. Deep models achieve 95.27\% accuracy—71 points above classical baselines—but exhibit vulnerabilities to occlusions (34.2\% accuracy) and demographic biases (36.6\% performance gap). AI-generated faces remain perfectly detectable (100\% classification accuracy) via frequency-domain artifacts. Our findings highlight critical trade-offs between accuracy, robustness, and fairness, with significant ethical implications for deployment in high-stakes contexts.
+\end{abstract}
+
+\vspace{-0.3cm}
+\section{Methods}
+
+\subsection{Dataset \& Splits}
+\textbf{Dataset:} 40,709 images, 247 Indian celebrity identities (Bollywood, South Indian cinema). Highly imbalanced: $\mu=164.8$ images/ID, range [14, 620]. Split 60/20/20 (train/val/test) using stratified sampling to maintain class distribution.
+
+\subsection{Models Implemented}
+
+\textbf{Deep Learning:}
+\begin{itemize}
+    \item \textbf{Buffalo\_L:} ResNet-50 backbone, ArcFace loss, 512-D embeddings. Trained on WebFace600K (50M parameters).
+    \item \textbf{AntelopeV2:} ResNet-100, state-of-the-art InsightFace model (100M parameters).
+\end{itemize}
+
+\textbf{Classical Baseline:}
+\begin{itemize}
+    \item \textbf{LBP+SVM:} Local Binary Patterns (8×8 grid, 256 bins) → 16,384-D features. Linear SVM with balanced class weights.
+\end{itemize}
+
+\textbf{Recognition Protocol:} Closed-set matching via cosine similarity to class centroids (mean training embeddings). Threshold $\tau=0.25$ for acceptance.
+
+\subsection{Robustness Testing}
+Applied 15 perturbations across 5 categories to 150 test images/condition:
+\begin{itemize}
+    \item \textbf{Lighting:} Brightness scaling ($\alpha \in \{0.6, 0.8\}$)
+    \item \textbf{Noise:} Gaussian ($\sigma \in \{5, 15, 25\}$)
+    \item \textbf{Blur:} Gaussian kernel ($k \in \{3, 7, 11\}$)
+    \item \textbf{Compression:} JPEG quality ($Q \in \{20, 50, 90\}$)
+    \item \textbf{Occlusions:} Eye bar, mouth mask, 50\% full mask
+\end{itemize}
+
+\subsection{Fairness Analysis}
+Estimated skin tone via YCrCb brightness: Dark ($<80$), Medium (80-140), Light ($>140$). Measured accuracy disparities across groups.
+
+\subsection{AI Face Detection}
+Tested 25 StyleGAN2-generated faces (ThisPersonDoesNotExist). Extracted 6 features: blur asymmetry, FFT edge artifacts, pixel variance, color variance, JPEG quality, face symmetry. Trained Random Forest classifier.
+
+\subsection{Crowd Testing}
+Evaluated on 10 multi-person images (27 detected faces) using full detection+recognition pipeline.
+
+\section{Results}
+
+\subsection{Performance Comparison}
+
+\begin{table}[H]
+\centering
+\caption{Model performance on clean validation and test sets.}
+\label{tab:performance}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model} & \textbf{Val Acc.} & \textbf{Test Acc.} & \textbf{Macro F1} & \textbf{Params} \\ \midrule
+Buffalo\_L & 0.9394 & \textbf{0.9527} & 0.9488 & 50M \\
+AntelopeV2 & 0.9318 & 0.9459 & 0.9466 & 100M \\
+LBP+SVM & 0.2527 & 0.2459 & 0.2436 & $<$1M \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Key Insight:} Deep learning achieves 71-point improvement over classical methods (95.27\% vs. 24.59\%). ArcFace's angular margin loss creates well-separated embedding clusters (intra-class similarity $>0.8$, inter-class $<0.3$), enabling robust recognition.
+
+\subsection{Robustness Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Average accuracy by perturbation category (150 samples/condition).}
+\label{tab:robustness}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+\textbf{Model} & \textbf{Original} & \textbf{Light} & \textbf{Noise} & \textbf{Blur} & \textbf{JPEG} & \textbf{Occlude} \\ \midrule
+Buffalo\_L & 0.467 & 0.450 & 0.411 & 0.469 & 0.453 & \textcolor{accent}{0.342} \\
+AntelopeV2 & 0.520 & 0.520 & 0.369 & 0.358 & 0.498 & 0.356 \\
+LBP+SVM & 0.121 & 0.117 & 0.107 & 0.122 & 0.118 & 0.089 \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{runs/robustness_analysis.png}
+    \caption{Robustness across 15 conditions: occlusions cause catastrophic failure (34.2\%), while photometric transformations show graceful degradation.}
+    \label{fig:robustness}
+\end{figure}
+
+\textbf{Observations:}
+\begin{itemize}
+    \item \textbf{Worst vulnerability:} Occlusions (34.2\% accuracy). Full face masks drop performance 50\%—critical for COVID-19 deployment scenarios.
+    \item \textbf{Best resilience:} Lighting variations (45.0\%) and JPEG compression (45.3\%). Models trained on diverse data generalize well.
+    \item \textbf{Moderate impact:} Blur (46.9\%) and noise (41.1\%). Heavy blur ($k=11$) and noise ($\sigma=25$) cause 20-25\% drops.
+\end{itemize}
+
+\subsection{Fairness: Demographic Disparities}
+
+\begin{table}[H]
+\centering
+\caption{Accuracy by skin tone proxy (brightness-based categorization).}
+\label{tab:fairness}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Group} & \textbf{Buffalo\_L} & \textbf{AntelopeV2} & \textbf{Sample Size} \\ \midrule
+Dark & 0.528 & 0.566 & 53 \\
+Medium & 0.432 & 0.472 & 250 \\
+Light & \textcolor{accent}{0.200} & \textcolor{accent}{0.200} & \textcolor{accent}{10} \\ \midrule
+\textbf{Disparity} & \textbf{0.328} & \textbf{0.366} & --- \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Critical Finding:} Up to 36.6\% performance gap between best (dark: 56.6\%) and worst (light: 20.0\%) groups. However, light group sample size ($n=10$) limits statistical validity. Excluding this outlier, dark-medium disparity remains 9.6 percentage points—evidence of systematic bias.
+
+\textbf{Root Causes:} Training data imbalance (WebFace600K overrepresents certain demographics), sensor bias (cameras calibrated for specific skin tones), and representation bias in our celebrity dataset.
+
+\subsection{Explainability}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{runs/explainability/lbp_explainability.png}
+        \caption{LBP: Interpretable texture patterns but lacks semantic understanding. Poor accuracy (24.59\%) limits utility.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{runs/explainability/deep_attention.png}
+        \caption{Deep models: Attention maps reveal focus on eyes/nose regions—biologically plausible, aligns with human strategies.}
+    \end{subfigure}
+    \caption{Explainability analysis: Classical methods transparent but inaccurate; deep models accurate but require post-hoc explanation (patch occlusion analysis).}
+    \label{fig:explain}
+\end{figure}
+
+\textbf{Trade-off:} LBP is interpretable (can inspect texture histograms) but fails to capture identity (24.59\%). Deep models achieve 95.27\% but are opaque—necessitating attention analysis to understand decision-making.
+
+\subsection{Advanced Testing}
+
+\textbf{Crowd Recognition:} 10 images, 27 faces detected. Recognition rate: \textbf{33.3\%} (9/27)—a 62-point drop from single-face scenarios (95.27\%). Challenges: small face sizes ($<$50×50px), partial occlusions, non-frontal poses. \textit{Implication:} Surveillance requires high-resolution cameras and close-range deployment (1-3m).
+
+\textbf{AI-Generated Faces:} Tested 25 StyleGAN2 synthetic faces. Statistical testing revealed:
+\begin{itemize}
+    \item \textbf{Edge artifacts:} Real ($\mu=28,581$) vs. AI ($\mu=1,830,921$), $t=-30.95$, $p<0.001$
+    \item \textbf{Pixel variance:} Real ($\mu=1,439$) vs. AI ($\mu=2,906$), $t=-5.24$, $p<0.001$
+\end{itemize}
+
+Random Forest classifier: \textbf{100\% accuracy} (15 test samples). Current AI faces remain perfectly separable via FFT frequency anomalies (58\% feature importance). \textit{However:} Future generative models (DALL-E 3, Midjourney v6) may eliminate artifacts, creating adversarial arms race.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{runs/ai_detection_distributions.png}
+    \caption{AI detection: Edge artifacts show clear separation (AI $\approx$64× higher), enabling perfect classification. Other features exhibit overlap.}
+    \label{fig:ai}
+\end{figure}
+
+\section{Ethical Reflections}
+
+\subsection{Bias \& Discrimination}
+Our fairness analysis confirms documented disparities \cite{buolamwini2018gender,grother2019demographic}: 32.8-36.6\% accuracy gap across demographic proxies. Real-world harms include:
+\begin{itemize}
+    \item \textbf{Wrongful arrests:} Higher false positive rates for underrepresented groups (e.g., Robert Williams, Detroit Police)
+    \item \textbf{Discriminatory access:} Security systems with demographic bias enable unequal treatment
+    \item \textbf{Asymmetric errors:} False rejections annoy; false acceptances threaten security
+\end{itemize}
+
+\textbf{Mitigation:} Diverse training data, fairness constraints (demographic parity), regular audits, human oversight for high-stakes decisions.
+
+\subsection{Privacy \& Surveillance}
+Mass deployment enables:
+\begin{itemize}
+    \item \textbf{Authoritarian control:} China's Social Credit System tracks citizens without consent
+    \item \textbf{Irreversible exposure:} Data breaches expose biometric data (unlike passwords, faces cannot be changed)
+    \item \textbf{Chilling effects:} Surveillance in public spaces inhibits free expression (protests, assembly)
+\end{itemize}
+
+\textbf{Case study:} Clearview AI scraped 3 billion faces from social media without consent—no opt-out mechanism exists \cite{hill2020biometric}.
+
+\textbf{Recommendations:} Opt-in consent requirements, transparent disclosure when deployed, data minimization (delete after use), prohibit surveillance in sensitive contexts (protests, places of worship).
+
+\subsection{Deepfakes \& AI-Generated Faces}
+Our finding (100\% detection accuracy) suggests current AI faces are detectable. However, rapid generative model improvements create risks:
+\begin{itemize}
+    \item \textbf{Identity theft:} Generate synthetic face matching target individual
+    \item \textbf{Authentication bypass:} AI faces fool biometric systems
+    \item \textbf{Disinformation:} Deepfakes undermine trust in visual evidence
+\end{itemize}
+
+\textbf{Mitigation:} Liveness detection (blinks, depth sensing), multi-modal authentication (face + voice + fingerprint), continuous detector updates.
+
+\subsection{Dual-Use Technology}
+Face recognition is inherently dual-use:
+\begin{itemize}
+    \item \textbf{Beneficial:} Finding missing persons, smartphone unlock, accessibility (photo organization for visually impaired)
+    \item \textbf{Harmful:} Authoritarian surveillance, stalking, discriminatory policing, emotion recognition for employee monitoring
+\end{itemize}
+
+\textbf{Governance needed:} Use-case specific regulation (ban in schools, allow in passports). EU AI Act classifies face recognition as "high-risk" \cite{euaiact2021}, requiring transparency and accountability. Some jurisdictions (San Francisco, Boston) ban government use entirely.
+
+\subsection{Recommendations for Responsible Deployment}
+
+\begin{enumerate}
+    \item \textbf{Impact assessments:} Evaluate potential harms before deployment
+    \item \textbf{Stakeholder engagement:} Consult affected communities
+    \item \textbf{Transparency:} Disclose when and how systems are used
+    \item \textbf{Accountability:} Clear liability when systems cause harm
+    \item \textbf{Human oversight:} Never fully automate high-stakes decisions (criminal justice, hiring)
+    \item \textbf{Regular audits:} Test for bias drift, adversarial vulnerabilities
+    \item \textbf{Sunset clauses:} Require periodic review and reauthorization
+\end{enumerate}
+
+\section{Conclusion}
+
+\textbf{Key Findings:}
+\begin{itemize}
+    \item Deep learning vastly outperforms classical methods (95.27\% vs. 24.59\%)
+    \item Critical vulnerabilities: occlusions (34.2\%), demographic biases (36.6\% disparity)
+    \item Current AI faces detectable (100\%), but future models may eliminate artifacts
+    \item Crowd scenarios degrade performance 62 points (33.3\% vs. 95.27\%)
+\end{itemize}
+
+\textbf{Core Tension:} Optimizing for accuracy (surveillance efficacy) conflicts with privacy, fairness, and civil liberties. Technical improvements alone are insufficient—robust governance frameworks must balance innovation with rights protection.
+
+\textbf{Call to Action:} Researchers must prioritize fairness and robustness; industry should adopt ethical guidelines and decline harmful contracts; policymakers should regulate use cases (not technology itself) with protections for vulnerable populations; the public should demand transparency and accountability.
+
+Face recognition is not inherently good or evil—its impact depends on deployment choices. This evaluation provides evidence to inform those choices, emphasizing that technical excellence must be coupled with ethical responsibility.
+
+\vspace{0.3cm}
+\noindent\textbf{Word Count:} Approximately 1,800 words (5.5 pages including figures/tables)
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
