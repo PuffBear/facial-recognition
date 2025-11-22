@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Face Recognition GUI Application
-Upload an image → Detect faces → Classify with confidence scores
+Face Recognition GUI Application - ACTUALLY FIXED
+Works with pre-aligned face images by directly calling ONNX inference
 """
 
 import gradio as gr
@@ -22,10 +22,42 @@ class FaceRecognitionSystem:
         """Initialize the face recognition system with trained model"""
         self.data_root = Path(data_root)
         self.app = None
+        self.rec_model = None
         self.ids = None
         self.prototypes = None
         self.loaded = False
         self.loading = False
+        
+    def get_embedding_from_aligned_face(self, img):
+        """
+        Extract embedding from pre-aligned face image
+        Args:
+            img: BGR image (from cv2.imread)
+        Returns:
+            embedding: 512-d normalized embedding
+        """
+        # Resize to 112x112 (model requirement)
+        if img.shape[0] != 112 or img.shape[1] != 112:
+            img = cv2.resize(img, (112, 112))
+        
+        # Convert to RGB
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        # Normalize to [-1, 1] and prepare for ONNX
+        img_normalized = img_rgb.astype(np.float32)
+        img_normalized = (img_normalized - 127.5) / 127.5
+        
+        # Transpose to CHW format and add batch dimension
+        img_input = img_normalized.transpose(2, 0, 1)[np.newaxis, ...]
+        
+        # Run inference on ONNX model
+        input_name = self.rec_model.session.get_inputs()[0].name
+        embedding = self.rec_model.session.run(None, {input_name: img_input})[0][0]
+        
+        # L2 normalize
+        embedding = embedding / (np.linalg.norm(embedding) + 1e-9)
+        
+        return embedding
         
     def load_model(self):
         """Load Buffalo_L model and compute class prototypes"""
@@ -42,6 +74,9 @@ class FaceRecognitionSystem:
             self.app = FaceAnalysis(name="buffalo_l")
             self.app.prepare(ctx_id=-1, det_size=(640, 640))
             
+            # Get the recognition model for direct ONNX inference
+            self.rec_model = self.app.models['recognition']
+            
             print("Computing class prototypes from training data...")
             train_root = self.data_root / "train"
             
@@ -56,49 +91,40 @@ class FaceRecognitionSystem:
             class_dirs = [d for d in sorted(train_root.iterdir()) if d.is_dir()]
             print(f"Found {len(class_dirs)} celebrity classes")
             
-            # ENHANCED ERROR TRACKING
-            failed_classes = []
             successful_classes = []
+            failed_classes = []
             
             for idx, cls_dir in enumerate(class_dirs, 1):
                 cls_name = cls_dir.name
-                image_paths = list(cls_dir.glob("*.jpg"))
-                
-                if not image_paths:
-                    print(f"  ⚠️  No .jpg images found in {cls_name}, trying other formats...")
-                    # Try other common image formats
-                    image_paths = list(cls_dir.glob("*.png")) + list(cls_dir.glob("*.jpeg"))
+                image_paths = list(cls_dir.glob("*.jpg")) + list(cls_dir.glob("*.png")) + list(cls_dir.glob("*.jpeg"))
                 
                 # Use only 3 images per class for FAST prototype computation
                 image_paths = image_paths[:3]
                 
                 class_embeddings_count = 0
                 for img_path in image_paths:
-                    img = cv2.imread(str(img_path))
-                    if img is None:
-                        print(f"  ⚠️  Could not read image: {img_path}")
-                        continue
-                    
-                    # Check if image is valid
-                    if img.size == 0:
-                        print(f"  ⚠️  Empty image: {img_path}")
-                        continue
-                    
-                    faces = self.app.get(img)
-                    if faces:
-                        train_embeddings.append(faces[0].normed_embedding)
+                    try:
+                        img = cv2.imread(str(img_path))
+                        if img is None:
+                            continue
+                        
+                        # Extract embedding using direct ONNX inference
+                        embedding = self.get_embedding_from_aligned_face(img)
+                        
+                        train_embeddings.append(embedding)
                         train_labels.append(cls_name)
                         class_embeddings_count += 1
-                    else:
-                        print(f"  ⚠️  No face detected in: {img_path.name}")
+                        
+                    except Exception as e:
+                        print(f"  ⚠️  Error processing {img_path.name}: {e}")
+                        continue
                 
                 if class_embeddings_count == 0:
                     failed_classes.append(cls_name)
-                    print(f"  ❌ No embeddings extracted for {cls_name}")
                 else:
                     successful_classes.append(cls_name)
                 
-                # Progress feedback with running total
+                # Progress feedback
                 if idx % 5 == 0:
                     print(f"  Processed {idx}/{len(class_dirs)} celebrities... ({len(train_embeddings)} embeddings so far)")
             
@@ -106,22 +132,15 @@ class FaceRecognitionSystem:
             print(f"\n📊 Processing Summary:")
             print(f"  Total embeddings: {len(train_embeddings)}")
             print(f"  Successful classes: {len(successful_classes)}/{len(class_dirs)}")
-            print(f"  Failed classes: {len(failed_classes)}")
             
             if failed_classes:
-                print(f"  Classes with no embeddings: {', '.join(failed_classes[:10])}" + 
-                      (f" (and {len(failed_classes)-10} more)" if len(failed_classes) > 10 else ""))
+                print(f"  Failed classes: {len(failed_classes)}")
+                if len(failed_classes) <= 10:
+                    print(f"  Classes with issues: {', '.join(failed_classes)}")
             
             if not train_embeddings:
                 self.loading = False
-                error_msg = "❌ Error: No face embeddings could be computed from training data\n\n"
-                error_msg += f"Possible issues:\n"
-                error_msg += f"1. Images may not be aligned/cropped faces\n"
-                error_msg += f"2. Image format issues (found {len(class_dirs)} classes but got 0 embeddings)\n"
-                error_msg += f"3. Face detection is failing on all images\n\n"
-                error_msg += f"Try checking: {train_root}"
-                print(error_msg)
-                return error_msg
+                return "❌ Error: No face embeddings could be computed"
             
             print(f"✅ Successfully computed {len(train_embeddings)} embeddings")
             
@@ -269,6 +288,8 @@ with gr.Blocks(title="Face Recognition System") as demo:
     # 🎭 Celebrity Face Recognition System
     **Agriya Yadav** | CS-4440: Artificial Intelligence | Ashoka University  
     Powered by **Buffalo_L (ArcFace)** | 95.27% Accuracy
+    
+    **✨ Fixed for pre-aligned face images!**
     """)
     
     # Model loading section
@@ -320,15 +341,16 @@ with gr.Blocks(title="Face Recognition System") as demo:
     ### 📚 About This System
     
     - **Model**: Buffalo_L (ResNet-50 backbone with ArcFace loss)
-    - **Dataset**: 40,709 images across 247 Indian celebrities  
+    - **Dataset**: Pre-aligned face images from Indian celebrity dataset
     - **Accuracy**: 95.27% on test set
     - **Features**: Real-time face detection, Multi-face recognition, Confidence scores, Top-5 predictions
     
     ### 🔬 How It Works:
-    1. **Face Detection**: InsightFace detects faces and computes bounding boxes
-    2. **Embedding**: Each face → 512-dimensional vector
-    3. **Classification**: Cosine similarity to class prototypes
-    4. **Ranking**: Top-5 most similar identities with confidence scores
+    1. **Training**: Directly extracts embeddings from pre-aligned 112x112 face crops via ONNX inference
+    2. **Face Detection**: InsightFace detects faces in uploaded images
+    3. **Embedding**: Each face → 512-dimensional vector
+    4. **Classification**: Cosine similarity to class prototypes
+    5. **Ranking**: Top-5 most similar identities with confidence scores
     
     ### ⚠️ Limitations:
     - Works best with clear, frontal faces
@@ -353,8 +375,10 @@ with gr.Blocks(title="Face Recognition System") as demo:
 
 if __name__ == "__main__":
     print("="*60)
-    print("🎭 FACE RECOGNITION SYSTEM - GUI")
+    print("🎭 FACE RECOGNITION SYSTEM - GUI (FIXED)")
     print("="*60)
+    print("\n✨ Fixed for pre-aligned face images!")
+    print("   Direct ONNX inference on face crops")
     print("\nStarting Gradio interface...")
     print("\n📌 Instructions:")
     print("1. Click 'Load Buffalo_L Model' to initialize")
